@@ -1,0 +1,177 @@
+entity Produit {
+    id UUID required unique,
+    nom String required,
+    description String,
+    sku String required unique,
+    dateAjout Instant,
+    actif Boolean required,
+    poids Float,
+    dimensions String,
+    marque String,
+    coutRevient BigDecimal,
+    marge BigDecimal
+}
+
+entity Categorie {
+    id UUID required unique,
+    nom String required,
+    description String,
+    code String unique
+}
+
+entity CodeAppel {
+    id UUID required unique,
+    code String required unique,
+    produit Produit required,
+    description String
+}
+
+entity Tarification {
+    id UUID required unique,
+    prix BigDecimal required,
+    quantiteMin Integer required,
+    quantiteMax Integer,
+    categorieClient String required
+}
+
+entity Variation {
+    id UUID required unique,
+    produit Produit required,
+    nom String required,
+    valeur String required,
+    prix BigDecimal
+}
+
+entity Depot {
+    id UUID required unique,
+    nom String required,
+    adresse String,
+    capacite Integer
+}
+
+entity Lot {
+    id UUID required unique,
+    produit Produit required,
+    depot Depot required,
+    dateLimite Instant required,
+    quantite Integer required,
+    uniteStockage UniteStockage required
+}
+
+entity StockDepot {
+    id UUID required unique,
+    lot Lot required,
+    stock Integer,
+    uniteStockage UniteStockage required
+}
+
+entity ProduitComposant {
+    id UUID required unique,
+    produitParent Produit required,
+    produitComposant Produit required,
+    quantite Integer required
+}
+
+entity Fournisseur {
+    id UUID required unique,
+    nom String required,
+    adresse String,
+    contact String,
+    telephone String,
+    email String
+}
+
+entity FournisseurProduit {
+    id UUID required unique,
+    fournisseur Fournisseur required,
+    produit Produit required,
+    prixAchat BigDecimal required,
+    delaiLivraison Integer,
+    conditionsAchat String
+}
+
+entity UniteStockage {
+    id UUID required unique,
+    nom String required,
+    description String
+}
+
+entity UniteVente {
+    id UUID required unique,
+    nom String required,
+    description String
+}
+
+entity UniteAchat {
+    id UUID required unique,
+    nom String required,
+    description String
+}
+
+relationship ManyToMany {
+    Produit{categories} to Categorie{produits}
+}
+
+relationship OneToMany {
+    Produit{tarifications} to Tarification{produit}
+}
+
+relationship OneToOne {
+    Produit{codeAppel} to CodeAppel{produit}
+}
+
+relationship OneToMany {
+    Produit{variations} to Variation{produit}
+}
+
+relationship OneToMany {
+    Depot{stocks} to StockDepot{depot}
+}
+
+relationship OneToMany {
+    Produit{stocks} to StockDepot{produit}
+}
+
+relationship ManyToOne {
+    Categorie{parent} to Categorie
+}
+
+relationship OneToMany {
+    Depot{lots} to Lot{depot}
+}
+
+relationship OneToMany {
+    Produit{lots} to Lot{produit}
+}
+
+relationship OneToMany {
+    Produit{composants} to ProduitComposant{produitParent}
+}
+
+relationship ManyToOne {
+    ProduitComposant{produitComposant} to Produit
+}
+
+relationship OneToMany {
+    Fournisseur{produits} to FournisseurProduit{fournisseur}
+}
+
+relationship OneToMany {
+    Produit{fournisseurs} to FournisseurProduit{produit}
+}
+
+relationship OneToOne {
+    Produit{fournisseurPrincipal} to FournisseurProduit{produit}
+}
+
+relationship ManyToMany {
+    Produit{unitesStockage} to UniteStockage
+}
+
+relationship ManyToMany {
+    Produit{unitesVente} to UniteVente
+}
+
+relationship ManyToMany {
+    Produit{unitesAchat} to UniteAchat
+}
